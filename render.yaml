@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: etsy-listing-gen
+    runtime: python
+    repo: https://github.com/fer1as/product-listing-gen
+    plan: free
+    branch: main
+    startCommand: python server.py
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
