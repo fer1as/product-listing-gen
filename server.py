@@ -145,6 +145,8 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/":
             self._serve_file(BASE_DIR / "dashboard.html", "text/html")
+        elif path == "/flyer":
+            self._serve_file(BASE_DIR / "flyer.html", "text/html")
         elif path == "/history":
             self._json_response(load_history())
         elif path.startswith("/static/"):
