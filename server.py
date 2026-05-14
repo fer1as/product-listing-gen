@@ -83,7 +83,7 @@ def generate_listing(data):
         user_prompt += f"\nDetails: {user_desc}"
     user_prompt += "\n\nGenerate the complete Etsy listing JSON."
 
-    models = ["google/gemma-2-27b-it", "meta-llama/llama-3.1-8b-instruct", "google/gemma-2-9b-it"]
+    models = ["openrouter/free", "meta-llama/llama-3.1-8b-instruct:free", "google/gemma-2-9b-it:free"]
     payload = json.dumps({
         "model": models[0],
         "messages": [
@@ -104,7 +104,7 @@ def generate_listing(data):
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {OPENROUTER_KEY}",
-                "HTTP-Referer": "http://localhost:8768",
+                "HTTP-Referer": "https://etsy-listing-gen.onrender.com",
             }
         )
         try:
