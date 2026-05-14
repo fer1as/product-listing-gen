@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Listing Generator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif; background: #0f0f11; color: #e4e4e7; min-height: 100vh; line-height: 1.5; }
+.container { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #27272a; margin-bottom: 32px; }
+header h1 { font-size: 22px; font-weight: 600; color: #f4f4f5; }
+header h1 span { color: #a78bfa; }
+header .subtitle { font-size: 13px; color: #71717a; margin-top: 2px; }
+
+.card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card h2 { font-size: 16px; font-weight: 600; color: #f4f4f5; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card h2 .badge { font-size: 11px; background: #27272a; color: #a1a1aa; padding: 2px 8px; border-radius: 99px; font-weight: 400; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { position: relative; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: #a1a1aa; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; background: #09090b; border: 1px solid #27272a; border-radius: 8px; color: #e4e4e7; font-size: 14px; transition: border-color .2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #a78bfa; }
+.form-group textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+.form-group .hint { font-size: 11px; color: #52525b; margin-top: 4px; }
+
+.btn { padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; }
+.btn-primary { background: #7c3aed; color: #fff; }
+.btn-primary:hover { background: #6d28d9; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-secondary { background: #27272a; color: #e4e4e7; }
+.btn-secondary:hover { background: #3f3f46; }
+.btn-success { background: #059669; color: #fff; }
+.btn-success:hover { background: #047857; }
+.btn-ghost { background: transparent; color: #a1a1aa; padding: 6px 12px; font-size: 12px; }
+.btn-ghost:hover { color: #e4e4e7; background: #27272a; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+.generation-spinner { display: none; align-items: center; justify-content: center; gap: 12px; padding: 40px; color: #a1a1aa; }
+.generation-spinner.active { display: flex; }
+.spinner { width: 24px; height: 24px; border: 3px solid #27272a; border-top-color: #a78bfa; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.output-section { display: none; }
+.output-section.active { display: block; }
+
+.output-item { margin-bottom: 20px; }
+.output-item .label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #71717a; margin-bottom: 6px; }
+.output-item .value { background: #09090b; border: 1px solid #27272a; border-radius: 8px; padding: 14px; font-size: 14px; color: #e4e4e7; white-space: pre-wrap; position: relative; }
+.output-item .value .copy-btn { position: absolute; top: 8px; right: 8px; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { background: #27272a; color: #a78bfa; padding: 4px 12px; border-radius: 99px; font-size: 12px; }
+.price-display { font-size: 28px; font-weight: 700; color: #34d399; }
+
+.warning { background: #451a03; border: 1px solid #78350f; border-radius: 8px; padding: 12px; font-size: 13px; color: #fdba74; margin-top: 12px; display: none; }
+.warning.active { display: block; }
+
+.meta-row { display: flex; gap: 20px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid #27272a; margin-top: 16px; }
+.meta-item { font-size: 12px; color: #52525b; }
+.meta-item span { color: #a1a1aa; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #09090b; border-radius: 8px; padding: 3px; }
+.tab { padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; color: #71717a; border: none; background: none; transition: all .2s; }
+.tab.active { background: #27272a; color: #e4e4e7; }
+.tab:hover:not(.active) { color: #a1a1aa; }
+
+.history-list { max-height: 400px; overflow-y: auto; }
+.history-item { padding: 12px; border-radius: 8px; background: #09090b; margin-bottom: 8px; cursor: pointer; transition: background .2s; }
+.history-item:hover { background: #18181b; }
+.history-item .h-title { font-size: 14px; font-weight: 500; color: #e4e4e7; }
+.history-item .h-meta { font-size: 11px; color: #52525b; margin-top: 2px; }
+.empty-state { text-align: center; padding: 40px; color: #52525b; font-size: 14px;}
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 12px 20px; font-size: 13px; color: #e4e4e7; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1><span>Listing</span>Generator</h1>
+      <div class="subtitle">SEO-optimized Etsy listings in seconds</div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="toggleHistory()">History</button>
+  </header>
+
+  <div class="card">
+    <h2>Product Details</h2>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="product">Product Name *</label>
+        <input type="text" id="product" placeholder="e.g. Handwoven Macrame Wall Hanging" onkeydown="if(event.key==='Enter')generate()">
+      </div>
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="home">Home & Living</option>
+          <option value="jewelry">Jewelry & Accessories</option>
+          <option value="clothing">Clothing</option>
+          <option value="art">Art & Collectibles</option>
+          <option value="craft">Craft Supplies</option>
+          <option value="vintage">Vintage</option>
+          <option value="wedding">Wedding</option>
+          <option value="paper">Paper & Party Supplies</option>
+          <option value="beauty">Bath & Beauty</option>
+          <option value="books">Books & Movies</option>
+          <option value="toys">Toys & Games</option>
+          <option value="pets">Pet Supplies</option>
+          <option value="sports">Sports & Outdoors</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="keywords">Target Keywords</label>
+        <input type="text" id="keywords" placeholder="boho, wall art, gift, farmhouse">
+        <div class="hint">Comma-separated</div>
+      </div>
+      <div class="form-group full">
+        <label for="description">Product Description <span style="color:#52525b;font-weight:400;">(optional)</span></label>
+        <textarea id="description" placeholder="What makes this product special? Materials, size, colors, use case..."></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generate()" id="genBtn">Generate Listing</button>
+    </div>
+  </div>
+
+  <div class="generation-spinner" id="spinner">
+    <div class="spinner"></div>
+    <span>Generating optimized listing...</span>
+  </div>
+
+  <div class="output-section" id="output">
+    <div class="card">
+      <h2>Generated Listing</h2>
+
+      <div class="warning" id="overusedWarning">
+        Tip: Some keywords are overused on Etsy (e.g. "unique", "gift", "perfect"). Consider more specific alternatives to stand out.
+      </div>
+
+      <div class="output-item">
+        <div class="label">SEO Title</div>
+        <div class="value" id="titleDisplay">
+          <button class="copy-btn btn btn-ghost btn-sm" onclick="copyText('titleDisplay')">Copy</button>
+        </div>
+      </div>
+
+      <div class="output-item">
+        <div class="label">Description</div>
+        <div class="value" id="descDisplay">
+          <button class="copy-btn btn btn-ghost btn-sm" onclick="copyText('descDisplay')">Copy</button>
+        </div>
+      </div>
+
+      <div class="output-item">
+        <div class="label">Tags (13)</div>
+        <div class="tag-list" id="tagsDisplay"></div>
+      </div>
+
+      <div class="output-item">
+        <div class="label">Suggested Price</div>
+        <div class="price-display" id="priceDisplay"></div>
+      </div>
+
+      <div class="meta-row" id="metaDisplay"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generate()">Generate Again</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('product').focus(); window.scrollTo({top:0,behavior:'smooth'})">Edit Details</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="historyCard" style="display:none;">
+    <h2>History <span class="badge" id="historyCount">0</span></h2>
+    <div id="historyList" class="history-list">
+      <div class="empty-state">No listings generated yet</div>
+    </div>
+    <div class="btn-row" id="clearHistoryRow" style="display:none;">
+      <button class="btn btn-ghost btn-sm" onclick="clearHistory()" style="color:#ef4444;">Clear History</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+async function generate() {
+  const product = document.getElementById('product').value.trim();
+  if (!product) { document.getElementById('product').focus(); showToast('Enter a product name first'); return; }
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('spinner').classList.add('active');
+  document.getElementById('output').classList.remove('active');
+
+  try {
+    const res = await fetch('/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        product,
+        category: document.getElementById('category').value,
+        keywords: document.getElementById('keywords').value.trim(),
+        description: document.getElementById('description').value.trim(),
+      })
+    });
+    const data = await res.json();
+    if (data.error) { showToast(data.error); return; }
+
+    renderOutput(data);
+    loadHistory();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  } finally {
+    document.getElementById('genBtn').disabled = false;
+    document.getElementById('spinner').classList.remove('active');
+  }
+}
+
+function renderOutput(data) {
+  document.getElementById('output').classList.add('active');
+
+  document.getElementById('titleDisplay').childNodes[0].textContent = '';
+  const titleText = document.createTextNode(data.title);
+  document.getElementById('titleDisplay').insertBefore(titleText, document.getElementById('titleDisplay').firstChild);
+
+  document.getElementById('descDisplay').childNodes[0].textContent = '';
+  const descText = document.createTextNode(data.description);
+  document.getElementById('descDisplay').insertBefore(descText, document.getElementById('descDisplay').firstChild);
+
+  const tagsEl = document.getElementById('tagsDisplay');
+  tagsEl.innerHTML = data.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+
+  document.getElementById('priceDisplay').textContent = data.price;
+
+  const meta = document.getElementById('metaDisplay');
+  meta.innerHTML = `
+    <div class="meta-item">Category: <span>${escapeHtml(data.category)}</span></div>
+    <div class="meta-item">Style: <span>${escapeHtml(data.style)}</span></div>
+    <div class="meta-item">Keywords: <span>${data.keywords_used.map(escapeHtml).join(', ')}</span></div>
+  `;
+
+  const warn = document.getElementById('overusedWarning');
+  if (data.overused_warning) { warn.classList.add('active'); } else { warn.classList.remove('active'); }
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch('/history');
+    const history = await res.json();
+    const listEl = document.getElementById('historyList');
+    const countEl = document.getElementById('historyCount');
+    const clearRow = document.getElementById('clearHistoryRow');
+
+    if (!history.length) {
+      listEl.innerHTML = '<div class="empty-state">No listings generated yet</div>';
+      countEl.textContent = '0';
+      clearRow.style.display = 'none';
+      return;
+    }
+
+    countEl.textContent = history.length;
+    clearRow.style.display = '';
+    listEl.innerHTML = history.slice().reverse().map((item, i) => `
+      <div class="history-item" onclick="loadFromHistory(${history.length - 1 - i})">
+        <div class="h-title">${escapeHtml(item.title.slice(0, 80))}${item.title.length > 80 ? '...' : ''}</div>
+        <div class="h-meta">${escapeHtml(item.category)} — ${item.price} — ${new Date(item.generated_at).toLocaleString()}</div>
+      </div>
+    `).join('');
+  } catch(e) { /* silent */ }
+}
+
+function loadFromHistory(index) {
+  fetch('/history').then(r => r.json()).then(history => {
+    if (history[index]) renderOutput(history[index]);
+  });
+}
+
+async function clearHistory() {
+  if (!confirm('Clear all generation history?')) return;
+  await fetch('/clear-history', {method: 'POST'});
+  loadHistory();
+  showToast('History cleared');
+}
+
+function toggleHistory() {
+  const card = document.getElementById('historyCard');
+  const visible = card.style.display !== 'none';
+  card.style.display = visible ? 'none' : '';
+  if (!visible) loadHistory();
+}
+
+function copyText(elementId) {
+  const el = document.getElementById(elementId);
+  const text = el.childNodes[0]?.textContent?.trim() || el.textContent?.trim();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => {
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    showToast('Copied!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+loadHistory();
+</script>
+</body>
+</html>
