@@ -5,7 +5,7 @@ from socketserver import ThreadingMixIn
 from pathlib import Path
 from datetime import datetime
 
-PORT = 8768
+PORT = int(os.environ.get("PORT", "8768"))
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     print(f"\n  Product Listing Generator (LLM)")
     print(f"  http://localhost:{PORT}")
     print(f"  Press Ctrl+C to stop\n")
-    server = ThreadedServer(("127.0.0.1", PORT), Handler)
+    server = ThreadedServer(("0.0.0.0", PORT), Handler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
