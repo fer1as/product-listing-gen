@@ -83,7 +83,7 @@ def generate_listing(data):
         user_prompt += f"\nDetails: {user_desc}"
     user_prompt += "\n\nGenerate the complete Etsy listing JSON."
 
-    models = ["openrouter/free", "meta-llama/llama-3.1-8b-instruct:free", "google/gemma-2-9b-it:free"]
+    models = ["openrouter/free"]
     payload = json.dumps({
         "model": models[0],
         "messages": [
@@ -108,7 +108,7 @@ def generate_listing(data):
             }
         )
         try:
-            with urllib.request.urlopen(req, timeout=45) as resp:
+            with urllib.request.urlopen(req, timeout=90) as resp:
                 result = json.loads(resp.read())
                 msg = result["choices"][0]["message"]
                 content = (msg.get("content") or "").strip()
