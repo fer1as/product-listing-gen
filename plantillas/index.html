@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plantillas Terapéuticas</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #F8F6F1; color: #2D3436; min-height: 100vh; }
+.bar { background: #2C3E50; height: 6mm; }
+.container { max-width: 1000px; margin: 0 auto; padding: 48px 24px; }
+h1 { font-family: Georgia, serif; font-size: 2.2em; color: #2C3E50; text-align: center; margin-bottom: 4px; }
+.deco { width: 50px; height: 3px; background: #C9785C; margin: 12px auto 32px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.card { background: white; border-radius: 10px; padding: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.card .tag { font-size: .75em; background: #C9785C; color: white; padding: 2px 10px; border-radius: 99px; display: inline-block; margin-bottom: 8px; }
+.card h2 { font-family: Georgia, serif; font-size: 1.15em; color: #2C3E50; margin-bottom: 8px; }
+.card p { font-size: .88em; color: #636e72; margin-bottom: 14px; line-height: 1.5; }
+.btn { display: inline-block; background: #2C3E50; color: white; text-decoration: none; padding: 7px 18px; border-radius: 6px; font-size: .85em; margin-right: 6px; }
+.btn-o { background: transparent; color: #2C3E50; border: 1px solid #2C3E50; }
+footer { text-align: center; padding: 24px; color: #BDC3C7; font-size: .8em; border-top: 1px solid #E0D8CC; margin-top: 32px; }
+@media (max-width: 600px) { .container { padding: 24px 16px; } h1 { font-size: 1.5em; } }
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<div class="container">
+  <h1>Plantillas Terapéuticas</h1>
+  <div class="deco"></div>
+  <div class="grid">
+    <div class="card">
+      <div class="tag">Admisión</div>
+      <h2>Ficha de Paciente</h2>
+      <p>Datos personales, motivo de consulta, historial clínico, objetivos y notas del terapeuta.</p>
+      <a href="ficha_paciente.pdf" class="btn" download>PDF</a>
+      <a href="ficha_paciente.html" class="btn btn-o" target="_blank">HTML</a>
+    </div>
+    <div class="card">
+      <div class="tag">Intervención</div>
+      <h2>Plan Terapéutico</h2>
+      <p>Objetivos por plazo, tabla de 8 sesiones, criterios de mejora y alta, seguimiento.</p>
+      <a href="plan_terapeutico.pdf" class="btn" download>PDF</a>
+      <a href="plan_terapeutico.html" class="btn btn-o" target="_blank">HTML</a>
+    </div>
+    <div class="card">
+      <div class="tag">Derivación</div>
+      <h2>Hoja de Derivación</h2>
+      <p>Derivación profesional con consentimiento del paciente, info clínica y firmas.</p>
+      <a href="hoja_derivacion.pdf" class="btn" download>PDF</a>
+      <a href="hoja_derivacion.html" class="btn btn-o" target="_blank">HTML</a>
+    </div>
+  </div>
+</div>
+<footer>GENERADO POR CLODE SYSTEM</footer>
+</body>
+</html>

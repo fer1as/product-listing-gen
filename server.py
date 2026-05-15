@@ -159,6 +159,17 @@ class Handler(BaseHTTPRequestHandler):
                 self._serve_file(filepath, mime)
             else:
                 self._send(404, "Not Found")
+        elif path.startswith("/plantillas/"):
+            filepath = BASE_DIR / path.lstrip("/")
+            if filepath.exists() and filepath.is_file():
+                ext = filepath.suffix.lower()
+                mime = {"pdf": "application/pdf", "html": "text/html",
+                        "css": "text/css", "png": "image/png"}.get(ext, "application/octet-stream")
+                self._serve_file(filepath, mime)
+            else:
+                self._send(404, "Not Found")
+        elif path == "/plantillas":
+            self._serve_file(BASE_DIR / "plantillas" / "index.html", "text/html")
         else:
             self._send(404, "Not Found")
 
